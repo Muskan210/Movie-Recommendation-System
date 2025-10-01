@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title> Movie Recommendation System</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      background: linear-gradient(135deg, #1c1c1c, #3a3a3a);
+      color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #2b2b2b;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+      width: 400px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #ffcc00;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    input {
+      padding: 10px;
+      width: 80%;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      background: #ffcc00;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Times New Roman', Times, serif;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #ffaa00;
+      transform: scale(1.05);
+    }
+
+    #results {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .movie {
+      background: #3a3a3a;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+
+    .movie:hover {
+      transform: translateX(5px);
+      background: #4a4a4a;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1> Movie Recommender</h1>
+    <input type="text" id="movieInput" placeholder="Enter a movie title">
+    <br>
+    <button onclick="getRecommendations()">Get Recommendations</button>
+
+    <div id="results"></div>
+  </div>
+
+  <script>
+    async function getRecommendations() {
+      const movie = document.getElementById("movieInput").value;
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const response = await fetch(`http://127.0.0.1:5000/recommend?movie=${movie}`);
+        const data = await response.json();
+
+        if (data.recommendations.length === 0) {
+          resultsDiv.innerHTML = "<p>No recommendations found.</p>";
+        } else {
+          resultsDiv.innerHTML = "<h3>Recommended Movies:</h3>";
+          data.recommendations.forEach(r => {
+            const div = document.createElement("div");
+            div.className = "movie";
+            div.textContent = r.title;
+            resultsDiv.appendChild(div);
+          });
+        }
+      } catch (err) {
+        resultsDiv.innerHTML = "<p style='color:red;'>Error: Could not connect to server.</p>";
+      }
+    }
+  </script>
+</body>
+
+</html>
